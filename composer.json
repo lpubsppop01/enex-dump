@@ -1,0 +1,7 @@
+{
+    "require-dev": {
+    },
+    "require": {
+        "soundasleep/html2text": "^0.5.0"
+    }
+}

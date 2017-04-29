@@ -32,6 +32,8 @@
 // php enex-dump.php allnotes.enex
 //
 
+require 'vendor/autoload.php';
+
 if ( $argc > 1 ) 
 {
 	$file = $argv[1];
@@ -74,7 +76,7 @@ while ( $node = getElementByName($data, "<note>", "</note>") )
 for ( $i = 0; $i < $count; $i++)
 {
 	$title = cleanup(getElementByName($nodes[$i], "<title>", "</title>"));
-	$content = cleanup(getElementByName($nodes[$i], "<content>", "</content>"));
+	$content = parseContent(getElementByName($nodes[$i], "<content>", "</content>"));
 
 	// Obtain note creation timestamp
 	$timestamp = cleanup(getElementByName($nodes[$i], "<updated>", "</updated>"));
@@ -93,11 +95,21 @@ for ( $i = 0; $i < $count; $i++)
 exit;
 
 
-function getElementByName($xml, $start, $end)
+function getElementByName($xml, $startPattern, $end, $usesPregOnStart = false)
 {
 	global $pos;
 
-	$startpos = strpos($xml, $start);
+	$start = "";
+	$startpos = false;
+	if ($usesPregOnStart) {
+		if (preg_match($startPattern, $xml, $matches, PREG_OFFSET_CAPTURE)) {
+			$start = $matches[0][0];
+			$startpos = $matches[0][1];
+		}
+	} else {
+		$start = $startPattern;
+		$startpos = strpos($xml, $start);
+	}
 
 	if ( $startpos === false )
 	{
@@ -123,5 +135,16 @@ function cleanup($str)
 	$str = html_entity_decode($str);
 
 	return $str;
+}
+
+function parseContent($str)
+{
+	// cf. soundasleep/html2text creates Markdown style links
+	$workStr = getElementByName($str, '/<en-note[^>]*>/', "</en-note>", $usesPregOnStart = true);
+	$workStr = str_replace('<en-todo checked="true"/>', '- [x] ', $workStr);
+	$workStr = str_replace('<en-todo checked="false"/>', '- [ ] ', $workStr);
+	$workStr = preg_replace('/<en-media [^>]*\/>/', '', $workStr);
+	$workStr = "<html>" . $workStr . "</html>";
+	return \Html2Text\Html2Text::convert($workStr);
 }
 
