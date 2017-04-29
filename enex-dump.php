@@ -78,8 +78,13 @@ for ( $i = 0; $i < $count; $i++)
 	$title = cleanup(getElementByName($nodes[$i], "<title>", "</title>"));
 	$content = parseContent(getElementByName($nodes[$i], "<content>", "</content>"));
 
-	// Obtain note creation timestamp
-	$timestamp = cleanup(getElementByName($nodes[$i], "<updated>", "</updated>"));
+	// Obtain note creation and update timestamp
+	$created = cleanup(getElementByName($nodes[$i], "<created>", "</created>"));
+	$updated = cleanup(getElementByName($nodes[$i], "<updated>", "</updated>"));
+
+	// Create content header and footer
+	$header = createContentHeader($title);
+	$footer = createContentFooter($created);
 
 	// sanitize the special charactors in titles for filenames
 	$charsToReplace = ['\\', '/', ':', '*', '?', '"', '<', '>', '|'];
@@ -88,8 +93,8 @@ for ( $i = 0; $i < $count; $i++)
 	// echo the filename
 	echo $outfile . PHP_EOL;
 
-	file_put_contents($outfile, $title . "\n\n" . $content);
-	touch($outfile, strtotime($timestamp)); // Change output file timestamp to match note creation timestamp
+	file_put_contents($outfile, $header . $content . $footer);
+	touch($outfile, strtotime($updated)); // Change output file timestamp to match note creation timestamp
 }
 
 exit;
@@ -146,5 +151,36 @@ function parseContent($str)
 	$workStr = preg_replace('/<en-media [^>]*\/>/', '', $workStr);
 	$workStr = "<html>" . $workStr . "</html>";
 	return \Html2Text\Html2Text::convert($workStr);
+}
+
+function createContentHeader($title)
+{
+	$header = <<<EOD
+# $title
+
+
+EOD;
+	return $header;
+}
+
+function createContentFooter($created)
+{
+	$createdStr = convertTimestamp($created);
+	$footer = <<<EOD
+
+
+------------------------------------------------------------------------
+
+Converted from Evernote content created at $createdStr
+EOD;
+	return $footer;
+}
+
+function convertTimestamp($enTimestamp)
+{
+	$dateTime = new DateTime($enTimestamp);
+	$dateTime->setTimezone(new DateTimeZone(date_default_timezone_get()));
+	$str = $dateTime->format(DateTime::ATOM);
+	return $str;
 }
 
