@@ -1,5 +1,8 @@
 <?php
 
+// This exex-dump is modified-version by lpubsppop01.
+// The following is the original header.
+
 //
 // enex-dump by Steven Frank (@stevenf) <http://stevenf.com/>
 //
@@ -76,12 +79,11 @@ for ( $i = 0; $i < $count; $i++)
 	// Obtain note creation timestamp
 	$timestamp = cleanup(getElementByName($nodes[$i], "<updated>", "</updated>"));
 
-	// sanitize the / in titles for filenames
-
-	$outfile = sprintf('%s/%s.%s', $outdir, str_replace('/', '-', $title), $ext);
+	// sanitize the special charactors in titles for filenames
+	$charsToReplace = ['\\', '/', ':', '*', '?', '"', '<', '>', '|'];
+	$outfile = sprintf('%s/%s.%s', $outdir, str_replace($charsToReplace, '-', $title), $ext);
 
 	// echo the filename
-
 	echo $outfile . PHP_EOL;
 
 	file_put_contents($outfile, $title . "\n\n" . $content);
