@@ -1,7 +1,7 @@
 <?php
 
-// This exex-dump is modified-version by lpubsppop01.
-// The following is the original header.
+// This enex-dump is a forked version by lpubsppop01.
+// The following is the original comment.
 
 //
 // enex-dump by Steven Frank (@stevenf) <http://stevenf.com/>
@@ -155,17 +155,12 @@ function parseContent($str)
 
 function createContentHeader($title)
 {
-	$header = <<<EOD
-# $title
-
-
-EOD;
-	return $header;
+	return $title . "\n\n";
 }
 
 function createContentFooter($created)
 {
-	$createdStr = convertTimestamp($created);
+	$createdStr = createTimestampString($created);
 	$footer = <<<EOD
 
 
@@ -176,9 +171,9 @@ EOD;
 	return $footer;
 }
 
-function convertTimestamp($enTimestamp)
+function createTimestampString($enTimestampStr)
 {
-	$dateTime = new DateTime($enTimestamp);
+	$dateTime = new DateTime($enTimestampStr);
 	$dateTime->setTimezone(new DateTimeZone(date_default_timezone_get()));
 	$str = $dateTime->format(DateTime::ATOM);
 	return $str;
