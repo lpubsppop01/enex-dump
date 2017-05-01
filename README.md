@@ -19,3 +19,6 @@ The changes are as follows:
 * Add characters that is not allowed in filename on Windows to replace on sanitizing title
 * Parse en-note content as HTML using [soundasleep/html2text](https://github.com/soundasleep/html2text)
 * Add footer that includes creation timestamp to output text
+* Output `*.md` files
+    + Insert `#` before title
+    + Insert <code>```</code> before and after content (if the content doesn't seem Markdown)
