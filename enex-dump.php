@@ -144,13 +144,15 @@ function cleanup($str)
 
 function parseContent($str)
 {
-	// cf. soundasleep/html2text creates Markdown style links
+	// cf. soundasleep/html2text creates Markdown style links, but removes &nbsp;
 	$workStr = getElementByName($str, '/<en-note[^>]*>/', "</en-note>", $usesPregOnStart = true);
 	$workStr = str_replace('<en-todo checked="true"/>', '- [x] ', $workStr);
 	$workStr = str_replace('<en-todo checked="false"/>', '- [ ] ', $workStr);
 	$workStr = preg_replace('/<en-media [^>]*\/>/', '', $workStr);
+	$workStr = str_replace('&nbsp;', '_NBSP_', $workStr);
 	$workStr = "<html>" . $workStr . "</html>";
 	$workStr = \Html2Text\Html2Text::convert($workStr);
+	$workStr = str_replace('_NBSP_', ' ', $workStr);
 	if (strpos($workStr, '```\n') != false) {
 		return $workStr;
 	}
