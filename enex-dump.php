@@ -44,7 +44,7 @@ else
 }
 
 $outdir = "output"; // Path of output folder
-$ext = "txt"; // Extension to use for exported notes
+$ext = "md"; // Extension to use for exported notes
 
 //
 
@@ -150,12 +150,16 @@ function parseContent($str)
 	$workStr = str_replace('<en-todo checked="false"/>', '- [ ] ', $workStr);
 	$workStr = preg_replace('/<en-media [^>]*\/>/', '', $workStr);
 	$workStr = "<html>" . $workStr . "</html>";
-	return \Html2Text\Html2Text::convert($workStr);
+	$workStr = \Html2Text\Html2Text::convert($workStr);
+	if (strpos($workStr, '```\n') != false) {
+		return $workStr;
+	}
+	return "```\n" . $workStr . "\n```";
 }
 
 function createContentHeader($title)
 {
-	return $title . "\n\n";
+	return "# " .  $title . "\n\n";
 }
 
 function createContentFooter($created)
