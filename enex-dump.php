@@ -87,7 +87,7 @@ for ( $i = 0; $i < $count; $i++)
 	$footer = createContentFooter($created);
 
 	// sanitize the special charactors in titles for filenames
-	$charsToReplace = ['\\', '/', ':', '*', '?', '"', '<', '>', '|'];
+	$charsToReplace = ['\\', '/', ':', '*', '?', '"', '<', '>', '|', ' '];
 	$outfile = sprintf('%s/%s.%s', $outdir, str_replace($charsToReplace, '-', $title), $ext);
 
 	// echo the filename
@@ -161,7 +161,7 @@ function parseContent($str)
 
 function createContentHeader($title)
 {
-	return "# " .  $title . "\n\n";
+	return "# " .  $title . "\n";
 }
 
 function createContentFooter($created)
