@@ -149,7 +149,7 @@ function parseContent($str)
 	$workStr = str_replace('<en-todo checked="true"/>', '- [x] ', $workStr);
 	$workStr = str_replace('<en-todo checked="false"/>', '- [ ] ', $workStr);
 	$workStr = preg_replace('/<en-media [^>]*\/>/', '', $workStr);
-	$workStr = str_replace('&nbsp;', '_NBSP_', $workStr);
+	$workStr = str_replace(['&nbsp;', chr(0xC2).chr(0xA0)], '_NBSP_', $workStr);
 	$workStr = "<html>" . $workStr . "</html>";
 	$workStr = \Html2Text\Html2Text::convert($workStr);
 	$workStr = str_replace('_NBSP_', ' ', $workStr);
